@@ -4,7 +4,7 @@ import Token from "../utils/Token";
 import { FaBookmark } from "react-icons/fa";
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useBookmarks } from "../context";
+import { useBookmarks } from "../Context";
 
 function Movie() {
   const [page, setPage] = useState(1);

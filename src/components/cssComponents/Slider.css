@@ -1,0 +1,102 @@
+/* Slider container */
+.slider-container {
+  width: 100%;
+  overflow-x: auto;
+  display: flex;
+  justify-content: flex-start; /* Align items from the start */
+  padding: 10px;
+  scroll-behavior: smooth;
+}
+
+/* Content inside the slider (all cards) */
+.slider-content {
+  display: flex;
+  width: max-content;
+  gap: 1rem; /* Smaller gap for better responsiveness */
+}
+
+/* Individual movie items */
+.slider-item {
+  flex: 0 0 20vw; /* Flex item with a base size of 20% of the viewport */
+  max-width: 20vw;
+  height: 30vh; /* Fixed height */
+  display: inline-block;
+}
+
+/* Movie image styling */
+.slider-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+/* Optional: Hide scrollbar for aesthetic purposes */
+.slider-container::-webkit-scrollbar {
+  display: none;
+}
+
+/* Scroll button styling */
+.scroll-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 50%;
+  z-index: 10;
+  width: 3rem;
+  height: 3rem; /* Fixed button size */
+}
+
+/* Left scroll button */
+.scroll-btn.left-0 {
+  left: 10px;
+}
+
+/* Right scroll button */
+.scroll-btn.right-0 {
+  right: 10px;
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 1024px) {
+  .slider-item {
+    flex: 0 0 25vw; /* Take up 25% of the viewport */
+    max-width: 25vw;
+    height: 25vh; /* Adjust height */
+  }
+
+  .scroll-btn {
+    width: 2.5rem;
+    height: 2.5rem; /* Smaller buttons */
+  }
+}
+
+@media (max-width: 768px) {
+  .slider-item {
+    flex: 0 0 40vw; /* Take up 40% of the viewport on smaller devices */
+    max-width: 40vw;
+    height: 22vh; /* Adjust height */
+  }
+
+  .scroll-btn {
+    width: 2.5rem;
+    height: 2.5rem; /* Keep smaller buttons */
+  }
+}
+
+@media (max-width: 480px) {
+  .slider-item {
+    flex: 0 0 60vw; /* Take up 60% of the viewport on very small screens */
+    max-width: 60vw;
+    height: 20vh; /* Adjust height */
+  }
+
+  .scroll-btn {
+    width: 2rem;
+    height: 2rem; /* Smaller buttons for very small screens */
+  }
+}

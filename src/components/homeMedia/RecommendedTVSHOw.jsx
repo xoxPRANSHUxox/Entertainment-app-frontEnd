@@ -33,7 +33,7 @@ function MediaRecommend() {
       });
   };
 
-  useEffect(() => {re
+  useEffect(() => {
     getMovies();
   }, []);
 

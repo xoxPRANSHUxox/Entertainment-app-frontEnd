@@ -12,15 +12,21 @@ export const BookmarkProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Replace with your Render backend URL
+  const BASE_URL = 'https://entertainment-app-backend-ggrw.onrender.com/api';
+
   const fetchBookmark = async () => {
     const user = auth.currentUser;
     if (user) {
       setLoading(true);
       try {
-        const response = await axios.get(`http://localhost:5000/api/bookmarks?userId=${user.uid}`);
+        const response = await axios.get(`${BASE_URL}/bookmarks`, {
+          headers: { Authorization: `Bearer ${await user.getIdToken()}` }, // Send Firebase token for auth
+        });
         setBookmarks(response.data);
       } catch (err) {
         setError('Failed to fetch bookmarks');
+        console.error(err);
       }
       setLoading(false);
     }
@@ -28,10 +34,13 @@ export const BookmarkProvider = ({ children }) => {
 
   const addBookmark = async (bookmarkData) => {
     const user = auth.currentUser;
-    
     if (user) {
       try {
-        await axios.post('http://localhost:5000/api/bookmarks', { ...bookmarkData, userId: user.uid });
+        await axios.post(
+          `${BASE_URL}/bookmarks`,
+          { ...bookmarkData, userId: user.uid },
+          { headers: { Authorization: `Bearer ${await user.getIdToken()}` } } // Send Firebase token for auth
+        );
         fetchBookmark(); // Refresh bookmarks after adding
         toast.success('Bookmark added successfully');
       } catch (err) {
@@ -49,15 +58,17 @@ export const BookmarkProvider = ({ children }) => {
     }
   };
 
-
   const deleteBookmark = async (id) => {
     const user = auth.currentUser;
     if (user) {
       try {
-        await axios.delete(`http://localhost:5000/api/bookmarks/${id}`);
+        await axios.delete(`${BASE_URL}/bookmarks/${id}`, {
+          headers: { Authorization: `Bearer ${await user.getIdToken()}` }, // Send Firebase token for auth
+        });
         fetchBookmark();
       } catch (err) {
         setError('Failed to delete bookmark');
+        console.error(err);
       }
     }
   };

@@ -21,7 +21,7 @@ const SearchBar = () => {
       params: {
         query: searchQuery,
         language: 'en-US',
-        include_adult: 'false'
+        include_adult: 'true'
       },
       headers: {
         accept: 'application/json',
@@ -32,7 +32,7 @@ const SearchBar = () => {
     try {
       const response = await axios.request(options);
       const filteredResults = response.data.results
-        ? response.data.results.filter(item => item.poster_path !== null).slice(0, 6)
+        ? response.data.results.filter(item => item.poster_path !== null)
         : [];
       setResults(filteredResults);
     } catch (error) {
@@ -82,7 +82,7 @@ const SearchBar = () => {
 
   return (
     <div className="px-4 py-6 sm:px-6 md:px-8 lg:px-12">
-      <form className="relative w-full max-w-4xl ml-20 bg-transparent rounded-lg">
+      <form className="mt-16 ml-4 sm:ml-20 sm:mt-0 w-[20rem] max-w-4xl bg-transparent rounded-lg sticky top-0 z-10 bg-gray-800">
         <label htmlFor="default-search" className="sr-only">Search</label>
         <div className="relative">
           <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -114,7 +114,7 @@ const SearchBar = () => {
         </div>
       </form>
 
-      <div className="max-w-4xl mx-20">
+      <div className="max-w-4xl mx-20 mt-16">
         {results.length > 0 && (
           <div className="flex flex-wrap justify-start">
             {results.map(result => (

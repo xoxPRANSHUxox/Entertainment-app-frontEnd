@@ -111,7 +111,7 @@ function TVSeries() {
   
 
   return (
-    <div className="text-white ml-16 pt-8 pl-8">
+    <div className="text-white sm:ml-16 pt-28 sm:pt-8">
       <h1 className="text-3xl font-semibold mb-3 pl-12">TRENDING TV SERIES</h1>
 
       {loading ? (

@@ -42,8 +42,8 @@ function MediaRecommend() {
   }
 
   return (
-    <div className='ml-[8rem]'> 
-      <h1 className='text-white text-2xl mt-8 font-bold'>TRENDING TV SHOWS</h1>
+    <div className='sm:ml-[8rem]'> 
+      <h1 className='text-white text-2xl mt-8 font-bold mx-4'>TRENDING TV SHOWS</h1>
       <Slider List={tvList} Time={7000}/> 
     </div>
   );

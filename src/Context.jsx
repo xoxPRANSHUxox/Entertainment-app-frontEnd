@@ -9,72 +9,75 @@ export const useBookmarks = () => useContext(BookmarkContext);
 
 export const BookmarkProvider = ({ children }) => {
   const [bookmarks, setBookmarks] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [user, setUser] = useState(null); // Keep track of the logged-in user
 
-  // Replace with your Render backend URL
-  const BASE_URL = 'https://entertainment-app-backend-ggrw.onrender.com/api';
+  const BASE_URL = 'http://localhost:5000' || 'https://entertainment-app-backend-ggrw.onrender.com/';
 
+  // Fetch bookmarks from the backend
   const fetchBookmark = async () => {
-    const user = auth.currentUser;
-    if (user) {
+    if (!user) {
+      return; // If no user, simply exit
+    }
+
+    try {
       setLoading(true);
-      try {
-        const response = await axios.get(`${BASE_URL}/bookmarks`, {
-          headers: { Authorization: `Bearer ${await user.getIdToken()}` }, // Send Firebase token for auth
-        });
-        setBookmarks(response.data);
-      } catch (err) {
-        setError('Failed to fetch bookmarks');
-        console.error(err);
-      }
+      const response = await axios.get(`${BASE_URL}/bookmarks?userId=${user.uid}`);
+      setBookmarks(response.data);
+      setError(null); // Clear any previous errors
+    } catch (err) {
+      toast.error('Failed to fetch bookmarks');
+    } finally {
       setLoading(false);
     }
   };
 
+  // Add a new bookmark
   const addBookmark = async (bookmarkData) => {
-    const user = auth.currentUser;
-    if (user) {
-      try {
-        await axios.post(
-          `${BASE_URL}/bookmarks`,
-          { ...bookmarkData, userId: user.uid },
-          { headers: { Authorization: `Bearer ${await user.getIdToken()}` } } // Send Firebase token for auth
-        );
-        fetchBookmark(); // Refresh bookmarks after adding
-        toast.success('Bookmark added successfully');
-      } catch (err) {
-        if (err.response && err.response.status === 400 && err.response.data.message === 'Bookmark with this ID already exists for this user') {
-          // Show a warning if the bookmark already exists for the logged-in user
-          toast.warn('You already bookmarked this item.');
-        } else {
-          // Generic error handling for other errors
-          toast.error('An error occurred while adding the bookmark.');
-          console.error(err);
-        }
-      }
-    } else {
+    if (!user) {
       toast.warn('Please log in to add bookmarks');
+      return;
+    }
+
+    try {
+      const data = { ...bookmarkData, userId: user.uid };
+      await axios.post(`${BASE_URL}/bookmarks`, data);
+      fetchBookmark(); // Refresh the bookmark list
+      toast.success('Bookmark added successfully');
+    } catch (err) {
+      setError('Failed to add bookmark');
+      console.error(err);
+      toast.error(err.response?.data?.message || 'Failed to add bookmark');
     }
   };
 
+  // Delete a bookmark
   const deleteBookmark = async (id) => {
-    const user = auth.currentUser;
-    if (user) {
-      try {
-        await axios.delete(`${BASE_URL}/bookmarks/${id}`, {
-          headers: { Authorization: `Bearer ${await user.getIdToken()}` }, // Send Firebase token for auth
-        });
-        fetchBookmark();
-      } catch (err) {
-        setError('Failed to delete bookmark');
-        console.error(err);
-      }
+    try {
+      await axios.delete(`${BASE_URL}/bookmarks/${id}`);
+      fetchBookmark(); // Refresh the bookmark list
+      toast.success('Bookmark deleted successfully');
+    } catch (err) {
+      setError('Failed to delete bookmark');
+      console.error(err);
+      toast.error('Failed to delete bookmark');
     }
   };
 
+  // Monitor Firebase user authentication state
   useEffect(() => {
-    fetchBookmark();
+    const unsubscribe = auth.onAuthStateChanged((currentUser) => {
+      if (currentUser) {
+        setUser(currentUser); // Set the user when logged in
+        fetchBookmark(); // Fetch bookmarks once the user is detected
+      } else {
+        setUser(null);
+        setBookmarks([]); // Clear bookmarks if the user logs out
+      }
+    });
+
+    return () => unsubscribe(); // Cleanup on component unmount
   }, []);
 
   return (

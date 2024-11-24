@@ -56,8 +56,8 @@ function MediaRecommend() {
   }
 
   return (
-    <div className='ml-[8rem]'>
-      <h1 className='text-white text-2xl font-bold my-4'>TRENDING MOVIES</h1>
+    <div className='sm:ml-[8rem]'>
+      <h1 className='text-white text-2xl font-bold my-4 mx-4'>TRENDING MOVIES</h1>
       <Slider List={movieList} Time={5000} onEndOfSlider={handleEndOfSlider} />
       {loading && <div>Loading more...</div>} {/* Show loading message */}
     </div>

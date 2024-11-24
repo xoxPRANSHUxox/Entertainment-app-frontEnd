@@ -25,6 +25,24 @@ function BookmarkPage() {
     return unsubscribe; // Cleanup on component unmount
   }, []);
 
+  // Store user in localStorage to persist across page refresh
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem('user', JSON.stringify(user)); // Store user info in localStorage
+    } else {
+      localStorage.removeItem('user'); // Remove user info when logged out
+    }
+  }, [user]);
+
+  // On page load, check if the user is already authenticated
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+      fetchBookmark(); // Fetch bookmarks if user data exists
+    }
+  }, []);
+
   // Show error toast if there's an error
   useEffect(() => {
     if (error) {
@@ -60,8 +78,8 @@ function BookmarkPage() {
   }
 
   return (
-    <div className="text-white ml-16 pt-8 pl-8">
-      <h1 className="text-3xl font-semibold mb-3 pl-12">Your Bookmarks</h1>
+    <div className="text-white sm:ml-28 pt-8 pl-8">
+      <h1 className="text-3xl font-semibold mb-3 mt-20">Your Bookmarks</h1>
       <ToastContainer />
 
       {Array.isArray(bookmarks) && bookmarks.length > 0 ? (

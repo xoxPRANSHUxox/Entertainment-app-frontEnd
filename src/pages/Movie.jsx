@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";  
 import axios from "axios";
 import Token from "../utils/Token";
 import { FaBookmark } from "react-icons/fa";
@@ -7,6 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useBookmarks } from "../Context";
 
 function Movie() {
+  // variables 
   const [page, setPage] = useState(1);
   const [movieList, setMovieList] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -15,6 +16,7 @@ function Movie() {
   const [trailer, setTrailer] = useState(null);
   const { addBookmark } = useBookmarks(); // Fix here
 
+  // get movie function 
   const getMovie = (pageNumber) => {
     setLoadingMore(true);
 
@@ -55,7 +57,8 @@ function Movie() {
   useEffect(() => {
     getMovie(page);
   }, [page]);
-
+ 
+  // function to get trailer of the movie 
   const getMovieTrailer = (movieId) => {
     const options = {
       method: "GET",
@@ -82,7 +85,8 @@ function Movie() {
         setTrailer(null);
       });
   };
-
+  
+  // handles for movie page 
   const handleMovieClick = (movie) => {
     setSelectedMovie(movie);
     getMovieTrailer(movie.id);
@@ -111,7 +115,7 @@ function Movie() {
   };
 
   return (
-    <div className="text-white ml-16 pt-8 pl-8">
+    <div className="text-white sm:ml-16 pt-28 sm:pt-8">
       <h1 className="text-3xl font-semibold mb-3 pl-12">TRENDING MOVIES</h1>
 
       {loading ? (

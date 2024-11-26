@@ -21,7 +21,7 @@ const SearchBar = () => {
       params: {
         query: searchQuery,
         language: 'en-US',
-        include_adult: 'true'
+        include_adult: 'false'
       },
       headers: {
         accept: 'application/json',

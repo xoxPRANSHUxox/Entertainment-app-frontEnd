@@ -1,5 +1,6 @@
 # Entertainment App - Frontend
 
+## Deplyment Link :- https://entertainment-app-xox.vercel.app/
 This repository contains the frontend code for the Bookmark Management System, a web application that allows users to manage their favorite movies and TV shows. The frontend is built with **React.js** and communicates with the backend through RESTful APIs.
 
 ---

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Token from '../../utils/Token';
 
@@ -7,11 +7,12 @@ const SearchBar = () => {
   const [results, setResults] = useState([]);
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [trailer, setTrailer] = useState(null);
+  const [showScrollButton, setShowScrollButton] = useState(false);
 
   // Function to fetch search results
   const fetchResults = async (searchQuery) => {
     if (!searchQuery.trim()) {
-      setResults([]);  // Clear results if searchQuery is empty
+      setResults([]); // Clear results if searchQuery is empty
       return;
     }
 
@@ -21,18 +22,18 @@ const SearchBar = () => {
       params: {
         query: searchQuery,
         language: 'en-US',
-        include_adult: 'false'
+        include_adult: 'false',
       },
       headers: {
         accept: 'application/json',
-        Authorization: Token
-      }
+        Authorization: Token,
+      },
     };
 
     try {
       const response = await axios.request(options);
       const filteredResults = response.data.results
-        ? response.data.results.filter(item => item.poster_path !== null)
+        ? response.data.results.filter((item) => item.poster_path !== null)
         : [];
       setResults(filteredResults);
     } catch (error) {
@@ -53,7 +54,7 @@ const SearchBar = () => {
       method: 'GET',
       url: `https://api.themoviedb.org/3/movie/${movieId}/videos`,
       params: { language: 'en-US' },
-      headers: { accept: 'application/json', Authorization: Token }
+      headers: { accept: 'application/json', Authorization: Token },
     };
 
     try {
@@ -80,8 +81,31 @@ const SearchBar = () => {
     setTrailer(null);
   };
 
+  // Handle scroll-to-top button visibility
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 200) {
+        setShowScrollButton(true);
+      } else {
+        setShowScrollButton(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Scroll to top function
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
+  };
+
   return (
-    <div className="px-4 py-6 sm:px-6 md:px-8 lg:px-12">
+    <div className="px-4 py-6 sm:px-6 md:px-8 lg:px-12 z-0">
       <form className="mt-16 ml-4 sm:ml-20 sm:mt-0 w-[20rem] max-w-4xl bg-transparent rounded-lg sticky top-0 z-10 bg-gray-800">
         <label htmlFor="default-search" className="sr-only">Search</label>
         <div className="relative">
@@ -117,17 +141,17 @@ const SearchBar = () => {
       <div className="max-w-4xl mx-20 mt-16">
         {results.length > 0 && (
           <div className="flex flex-wrap justify-start">
-            {results.map(result => (
+            {results.map((result) => (
               <div
                 key={result.id}
                 className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 p-4 cursor-pointer"
                 onClick={() => handleMovieClick(result)}
               >
                 <div className="bg-gray-800 rounded-lg overflow-hidden">
-                  <img 
-                    src={`https://image.tmdb.org/t/p/w500${result.poster_path}`} 
-                    alt={result.title} 
-                    className="w-full h-auto" 
+                  <img
+                    src={`https://image.tmdb.org/t/p/w500${result.poster_path}`}
+                    alt={result.title}
+                    className="w-full h-auto"
                   />
                   <div className="p-3">
                     <h3 className="text-sm text-white">{result.title}</h3>
@@ -164,6 +188,16 @@ const SearchBar = () => {
             </button>
           </div>
         </div>
+      )}
+
+      {/* Scroll to Top Button */}
+      {showScrollButton && (
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-6 right-6 bg-blue-500 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition-all z-50"
+        >
+          ↑
+        </button>
       )}
     </div>
   );

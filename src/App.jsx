@@ -8,7 +8,6 @@ import Bookmark from "./pages/Bookmark";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Tvseries from "./pages/Tvseries";
-
 function App() {
   return (
     <>

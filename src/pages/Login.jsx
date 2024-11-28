@@ -3,7 +3,6 @@ import { auth } from "../../firebase";
 import {
   signInWithEmailAndPassword,
   signOut,
-  createUserWithEmailAndPassword,
   onAuthStateChanged,
 } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
@@ -14,52 +13,56 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
-
   const navigate = useNavigate();
 
-  // Listen for authentication state changes
+  // Monitor user authentication state
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (currentUser) {
+        const token = await currentUser.getIdToken();
+        const storedToken = localStorage.getItem("token");
+        if (storedToken && storedToken !== token) {
+          // If a different session exists, log out the current user
+          await signOut(auth);
+          localStorage.removeItem("token");
+          setUser(null);
+          toast.warn("Logged out from the previous session.");
+        } else {
+          // Save token and set user
+          localStorage.setItem("token", token);
+          setUser(currentUser);
+          navigate("/bookmarks");
+        }
+      } else {
+        setUser(null);
+        localStorage.removeItem("token");
+      }
     });
-    return () => unsubscribe();
-  }, []);
 
-  const handleSignUpClick = () => {
-    navigate("/signup"); // Navigate to the signup page
-  };
+    return () => unsubscribe(); // Cleanup on component unmount
+  }, [navigate]);
 
-  const handleLogin = async (event) => {
-    event.preventDefault(); // Prevent page refresh
+  const handleLogin = async (e) => {
+    e.preventDefault();
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const token = await userCredential.user.getIdToken();
       localStorage.setItem("token", token);
-      navigate("/bookmarks"); // Redirect to bookmarks or another page
+      setUser(userCredential.user);
+      toast.success("Login successful!");
+      navigate("/bookmarks"); // Redirect to Bookmarks page
     } catch (error) {
       console.error(error);
-      toast.error(error.message);
-    }
-  };
-
-  const handleSignUp = async (event) => {
-    event.preventDefault(); // Prevent page refresh
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const token = await userCredential.user.getIdToken();
-      localStorage.setItem("token", token); // Save the token to localStorage
-      navigate("/bookmarks"); // Redirect to bookmarks or another page
-    } catch (error) {
-      console.error(error);
-      toast.error(error.message);
+      toast.error("Invalid email or password");
     }
   };
 
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      toast.success("Logout Successful");
+      localStorage.removeItem("token");
       setUser(null);
+      toast.success("Logged out successfully!");
     } catch (err) {
       toast.error(`Logout failed: ${err.message}`);
     }
@@ -113,7 +116,7 @@ function Login() {
               className="mt-1 w-full p-2 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-red-500"
               placeholder="Enter your password"
               required
-              autoComplete="current-password" // Added autocomplete attribute
+              autoComplete="current-password"
             />
           </div>
 
@@ -123,18 +126,6 @@ function Login() {
           >
             Login
           </button>
-
-          <button
-            onClick={handleSignUpClick}
-            type="button"
-            className="w-full py-2 font-semibold text-white bg-gray-600 rounded-lg hover:bg-gray-500 transition duration-200"
-          >
-            Sign Up
-          </button>
-
-          <p className="text-xs text-center text-gray-400 mt-4">
-            If you don’t have an account, please sign up first.
-          </p>
         </form>
       )}
       <ToastContainer />

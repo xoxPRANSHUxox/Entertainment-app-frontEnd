@@ -57,3 +57,13 @@ button {
   border: none;
   font-size: 24px;
 }
+
+/* CSS for flip effect on touch/click */
+.icon-flip {
+  transition: transform 0.3s ease-in-out;
+}
+
+.icon-flip:active {
+  transform: rotateY(180deg);
+}
+

@@ -4,7 +4,7 @@ import { auth } from '../../firebase'; // Import Firebase authentication
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
-
+import Loader from '../components/cssComponents/Loader'
 function BookmarkPage() {
   const { bookmarks, loading, error, fetchBookmark, deleteBookmark } = useBookmarks();
   const [user, setUser] = useState(null);
@@ -72,7 +72,7 @@ function BookmarkPage() {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <div className="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-32 w-32"></div>
+       <Loader/>
       </div>
     );
   }

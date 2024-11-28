@@ -33,16 +33,18 @@ export const BookmarkProvider = ({ children }) => {
     }
   };
 
-  // Add a new bookmark
   const addBookmark = async (bookmarkData) => {
     if (!user) {
       toast.warn('Please log in to add bookmarks');
       return;
     }
-
+  
     try {
-      const data = { ...bookmarkData, userId: user.uid };
+      // Add the userId to the bookmark data
+      const data = { ...bookmarkData, userId: user.uid };  // Make sure user.uid is available
       await axios.post(`${BASE_URL}/bookmarks`, data);
+      
+      // Optionally fetch updated bookmarks
       fetchBookmark(); // Refresh the bookmark list
       toast.success('Bookmark added successfully');
     } catch (err) {
@@ -51,6 +53,7 @@ export const BookmarkProvider = ({ children }) => {
       toast.error(err.response?.data?.message || 'Failed to add bookmark');
     }
   };
+  
 
   // Delete a bookmark
   const deleteBookmark = async (id) => {

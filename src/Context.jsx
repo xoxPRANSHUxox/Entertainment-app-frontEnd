@@ -13,7 +13,8 @@ export const BookmarkProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const [user, setUser] = useState(null); // Keep track of the logged-in user
 
-  const BASE_URL = 'https://entertainment-app-backend-ggrw.onrender.com';
+  // Use the production backend URL
+  const BASE_URL = 'https://entertainment-app-backend-ggrw.onrender.com'; // Updated backend URL
 
   // Fetch bookmarks from the backend
   const fetchBookmark = async () => {

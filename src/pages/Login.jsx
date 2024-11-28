@@ -3,12 +3,12 @@ import { auth } from "../../firebase";
 import {
   signInWithEmailAndPassword,
   signOut,
+  createUserWithEmailAndPassword,
   onAuthStateChanged,
 } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -17,6 +17,7 @@ function Login() {
 
   const navigate = useNavigate();
 
+  // Listen for authentication state changes
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -25,7 +26,7 @@ function Login() {
   }, []);
 
   const handleSignUpClick = () => {
-    navigate("/signup");
+    navigate("/signup"); // Navigate to the signup page
   };
 
   const handleLogin = async (event) => {
@@ -34,13 +35,25 @@ function Login() {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const token = await userCredential.user.getIdToken();
       localStorage.setItem("token", token);
-      navigate("/bookmarks");
+      navigate("/bookmarks"); // Redirect to bookmarks or another page
     } catch (error) {
       console.error(error);
       toast.error(error.message);
     }
   };
-  
+
+  const handleSignUp = async (event) => {
+    event.preventDefault(); // Prevent page refresh
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const token = await userCredential.user.getIdToken();
+      localStorage.setItem("token", token); // Save the token to localStorage
+      navigate("/bookmarks"); // Redirect to bookmarks or another page
+    } catch (error) {
+      console.error(error);
+      toast.error(error.message);
+    }
+  };
 
   const handleLogout = async () => {
     try {
